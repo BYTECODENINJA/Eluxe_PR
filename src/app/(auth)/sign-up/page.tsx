@@ -1,7 +1,7 @@
 "use client"
 import {useRouter} from "next/navigation";
 import React, {useState} from "react";
-import {signIn} from "@/lib/auth-client";
+import {signIn, signUp} from "@/lib/auth-client";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {FaGithub, FaGoogle} from "react-icons/fa";
@@ -9,19 +9,21 @@ import {Separator} from "@base-ui/react";
 import {handleEntrypoints} from "next/dist/server/dev/turbopack-utils";
 import Link from "next/link";
 
-export default function SignInPage() {
+export default function SignUpPage() {
     const router = useRouter();
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleSignIn = async (e: React.FormEvent) => {
+    const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         setLoading(true);
 
-        const result = await signIn.email({
+        const result = await signUp.email({
+            name,
             email,
             password,
         });
@@ -70,25 +72,42 @@ export default function SignInPage() {
                         </div>
                         <div className="flex gap-6 text-gray-400">
                             <a href="#home" className="hover:text-white transition-colors">Home</a>
-                            <a href="/sign-up" className="text-gray-300 hover:text-white transition-colors">Join</a>
+                            <a href="/sign-in" className="text-gray-300 hover:text-white transition-colors">Join</a>
                         </div>
                     </div>
 
                     {/* Middle: Main Form */}
                     <div className="my-auto py-6">
                         <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
-                            Sign in with Email, Google Or Github
+                            Sign up with Email, Google Or Github
                         </span>
                         <h1 className="mt-1 text-3xl font-bold tracking-tight">
                             Sign In<span className="text-[#2086fe]">.</span>
                         </h1>
                         <p className="mt-2 text-xs text-gray-400">
-                            Don&apos;t have an account?{" "}
-                            <Link href="/sign-up" className="text-[#2086fe] font-medium hover:underline">
-                                Sign up
+                            Already have an account?{" "}
+                            <Link href="/sign-in" className="text-[#2086fe] font-medium hover:underline">
+                                Sign In
                             </Link>
                         </p>
-                        <form onSubmit={handleSignIn} className="mt-8 space-y-4">
+                        <form onSubmit={handleSignUp} className="mt-8 space-y-4">
+                            {/* Name Field */}
+                            <div className="relative rounded-xl bg-[#2c313d] p-2.5 transition-all focus-within:ring-2 focus-within:ring-[#2086fe]/50">
+                                <label htmlFor="name" className="block text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                                    Name
+                                </label>
+                                <input
+                                    id="name"
+                                    type="name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                    placeholder="John Doe"
+                                    disabled={loading}
+                                    className="w-full bg-transparent pt-0.5 text-sm font-medium outline-none placeholder:text-gray-600"
+                                />
+                            </div>
+
                             {/* Email Field */}
                             <div className="relative rounded-xl bg-[#2c313d] p-2.5 transition-all focus-within:ring-2 focus-within:ring-[#2086fe]/50">
                                 <label htmlFor="email" className="block text-[10px] font-semibold uppercase tracking-wider text-gray-400">
