@@ -2,11 +2,8 @@
 import {useRouter} from "next/navigation";
 import React, {useState} from "react";
 import {signIn, signUp} from "@/lib/auth-client";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
 import {FaGithub, FaGoogle} from "react-icons/fa";
-import {Separator} from "@base-ui/react";
-import {handleEntrypoints} from "next/dist/server/dev/turbopack-utils";
 import Link from "next/link";
 
 export default function SignUpPage() {
@@ -22,17 +19,22 @@ export default function SignUpPage() {
         setError("");
         setLoading(true);
 
-        const result = await signUp.email({
-            name,
-            email,
-            password,
-        });
+        try {
+            const result = await signUp.email({
+                name,
+                email,
+                password,
+            });
 
-        if (result.error) {
-            setError(result.error.message || "An error occurred");
+            if (result.error) {
+                setError(result.error.message || "An error occurred");
+                setLoading(false);
+            } else {
+                router.push("/repos");
+            }
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "An error occurred");
             setLoading(false);
-        } else {
-            router.push("/repos");
         }
     }
 
@@ -40,20 +42,30 @@ export default function SignUpPage() {
         setError("");
         setLoading(true);
 
-        await signIn.social({
-            provider: "github",
-            callbackURL: "/repos",
-        })
+        try {
+            await signIn.social({
+                provider: "github",
+                callbackURL: "/repos",
+            });
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "An error occurred");
+            setLoading(false);
+        }
     }
 
     const handleGoogleSignIn = async () => {
         setError("");
         setLoading(true);
 
-        await signIn.social({
-            provider: "google",
-            callbackURL: "/repos",
-        })
+        try {
+            await signIn.social({
+                provider: "google",
+                callbackURL: "/repos",
+            });
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "An error occurred");
+            setLoading(false);
+        }
     }
 
     return (
@@ -71,8 +83,8 @@ export default function SignUpPage() {
                             Eluxe PR.
                         </div>
                         <div className="flex gap-6 text-gray-400">
-                            <a href="#home" className="hover:text-white transition-colors">Home</a>
-                            <a href="/sign-in" className="text-gray-300 hover:text-white transition-colors">Join</a>
+                            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+                            <Link href="/sign-in" className="text-gray-300 hover:text-white transition-colors">Sign In</Link>
                         </div>
                     </div>
 
@@ -82,7 +94,7 @@ export default function SignUpPage() {
                             Sign up with Email, Google Or Github
                         </span>
                         <h1 className="mt-1 text-3xl font-bold tracking-tight">
-                            Sign In<span className="text-[#2086fe]">.</span>
+                            Sign Up<span className="text-[#2086fe]">.</span>
                         </h1>
                         <p className="mt-2 text-xs text-gray-400">
                             Already have an account?{" "}
@@ -98,13 +110,13 @@ export default function SignUpPage() {
                                 </label>
                                 <input
                                     id="name"
-                                    type="name"
+                                    type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     required
                                     placeholder="John Doe"
                                     disabled={loading}
-                                    className="w-full bg-transparent pt-0.5 text-sm font-medium outline-none placeholder:text-gray-600"
+                                    className="w-full bg-transparent pt-0.5 text-sm font-medium text-white outline-none placeholder:text-gray-600"
                                 />
                             </div>
 
@@ -121,7 +133,7 @@ export default function SignUpPage() {
                                     required
                                     placeholder="johndoe@mail.com"
                                     disabled={loading}
-                                    className="w-full bg-transparent pt-0.5 text-sm font-medium outline-none placeholder:text-gray-600"
+                                    className="w-full bg-transparent pt-0.5 text-sm font-medium text-white outline-none placeholder:text-gray-600"
                                 />
                             </div>
 
@@ -138,7 +150,7 @@ export default function SignUpPage() {
                                     required
                                     placeholder="********"
                                     disabled={loading}
-                                    className="w-full bg-transparent pt-0.5 text-sm font-medium tracking-widest outline-none placeholder:text-gray-600"
+                                    className="w-full bg-transparent pt-0.5 text-sm font-medium tracking-widest text-white outline-none placeholder:text-gray-600"
                                 />
                             </div>
 
@@ -153,6 +165,7 @@ export default function SignUpPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <Button
                                     variant="outline"
+                                    type="button"
                                     onClick={handleGithubSignIn}
                                     disabled={loading}
                                     className="flex items-center justify-center gap-2 rounded-full bg-[#3d4354] border-none py-3 text-xs font-semibold text-gray-200 transition-colors hover:bg-[#484f63]"
@@ -162,7 +175,8 @@ export default function SignUpPage() {
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    onClick={handleGithubSignIn}
+                                    type="button"
+                                    onClick={handleGoogleSignIn}
                                     disabled={loading}
                                     className="flex items-center justify-center gap-2 rounded-full bg-[#3d4354] border-none py-3 text-xs font-semibold text-gray-200 transition-colors hover:bg-[#484f63]"
                                 >
@@ -177,7 +191,7 @@ export default function SignUpPage() {
                                     disabled={loading}
                                     className="w-full rounded-full bg-[#2086fe] py-3 text-xs font-semibold text-white shadow-lg shadow-[#2086fe]/20 transition-all hover:bg-[#1a73df] disabled:opacity-50"
                                 >
-                                    {loading ? "Signing in..." : "Sign in"}
+                                    {loading ? "Creating account..." : "Sign up"}
                                 </Button>
                             </div>
                         </form>

@@ -10,12 +10,12 @@ export default function Home() {
           <p>Reviewing code the right way.</p>
         </div>
         <div className="flex gap-4">
-          <Button>
-            <Link href="/login">Login</Link>
-          </Button>
-          <Button>
-            <Link href="/signup">Signup</Link>
-          </Button>
+          <Link href="/sign-in">
+            <Button>Login</Button>
+          </Link>
+          <Link href="/sign-up">
+            <Button>Signup</Button>
+          </Link>
           <HealthCheck />
         </div>
       </div>

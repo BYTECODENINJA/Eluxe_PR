@@ -1,6 +1,6 @@
-import { betterAuth} from "better-auth";
-import { prismaAdapter} from "better-auth/adapters/prisma";
-import {db} from "@/server/db";
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { db } from "@/server/db";
 
 export const auth = betterAuth({
     database: prismaAdapter(db, {
@@ -10,14 +10,18 @@ export const auth = betterAuth({
         enabled: true,
     },
     socialProviders: {
-        github: {
-            clientId: process.env.GITHUB_CLIENT_ID!,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-        },
-        google: {
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-        }
+        ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET ? {
+            github: {
+                clientId: process.env.GITHUB_CLIENT_ID,
+                clientSecret: process.env.GITHUB_CLIENT_SECRET,
+            }
+        } : {}),
+        ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? {
+            google: {
+                clientId: process.env.GOOGLE_CLIENT_ID,
+                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            }
+        } : {})
     },
     session: {
         expiresIn: 60 * 60 * 24 * 7,
@@ -27,7 +31,7 @@ export const auth = betterAuth({
             maxAge: 60 * 5,
         }
     },
-    trustedOrigins: [process.env.BETTER_AUTH_URL!],
+    trustedOrigins: [process.env.BETTER_AUTH_URL].filter((url): url is string => Boolean(url)),
 });
 
 export type Session = typeof auth.$Infer.Session;
