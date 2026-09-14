@@ -3,7 +3,7 @@ import {useRouter} from "next/navigation";
 import React, {useState} from "react";
 import {signIn, signUp} from "@/lib/auth-client";
 import {Button} from "@/components/ui/button";
-import {FaGithub, FaGoogle} from "react-icons/fa";
+import {FaEye, FaEyeSlash, FaGithub, FaGoogle} from "react-icons/fa";
 import Link from "next/link";
 
 export default function SignUpPage() {
@@ -11,6 +11,7 @@ export default function SignUpPage() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -144,14 +145,23 @@ export default function SignUpPage() {
                                 </label>
                                 <input
                                     id="password"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                     placeholder="********"
                                     disabled={loading}
-                                    className="w-full bg-transparent pt-0.5 text-sm font-medium tracking-widest text-white outline-none placeholder:text-gray-600"
+                                    className="w-full bg-transparent pr-8 pt-0.5 text-sm font-medium tracking-widest text-white outline-none placeholder:text-gray-600"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword((prev) => !prev)}
+                                    disabled={loading}
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-white"
+                                >
+                                    {showPassword ? <FaEyeSlash className="size-4"/> : <FaEye className="size-4"/>}
+                                </button>
                             </div>
 
                             {error && <p className="text-xs text-red-400">{error}</p>}
