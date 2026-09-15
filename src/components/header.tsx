@@ -4,6 +4,7 @@ import {GitPullRequestIcon} from "@phosphor-icons/react";
 import {usePathname} from "next/navigation";
 import Link from "next/link";
 import {cn} from "@/lib/utils";
+import {UserMenu} from "@/components/user-menu";
 
 interface User{
     id: string,
@@ -54,6 +55,10 @@ export function Header({user}: HeaderProps){
                             )
                         })}
                     </nav>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <UserMenu user={user} />
                 </div>
             </div>
         </header>
